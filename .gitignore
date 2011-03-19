@@ -1,0 +1,8 @@
+target/
+lib_managed/
+src_managed/
+project/boot/
+.idea
+lanchat.iml
+project/project.iml
+project/plugins/project/build.properties
