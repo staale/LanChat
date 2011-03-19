@@ -2,31 +2,20 @@ package org.staale.lanchat
 
 import util.Marshal
 import actors.Actor
-import actors.Actor._
 import actors.TIMEOUT
-import java.nio.ByteBuffer
 import java.net._
-
-/**
- * Created by IntelliJ IDEA.
- * User: staaleu
- * Date: 3/19/11
- * Time: 8:08 AM
- * To change this template use File | Settings | File Templates.
- */
 
 sealed trait MulticastActorMessage
 case class Subscribe(actor: Actor) extends MulticastActorMessage
 case object StopTransmission extends MulticastActorMessage
 
 abstract class MessageBase
-case class Message(text: String) extends MessageBase
 
-class MulticastActor(private val group:InetAddress) extends Actor {
+class MulticastActor(private val group:InetAddress, private val port:Int) extends Actor {
 
-  def this() = this(InetAddress.getByName("225.11.22.33"));
+  def this() = this(InetAddress.getByName("225.11.22.33"), 5678);
 
-  private val socket = new MulticastSocket(5678);
+  private val socket = new MulticastSocket(port);
   private val packet = new DatagramPacket(new Array[Byte](4096), 4096);
 
   socket.setSoTimeout(50);
@@ -49,9 +38,6 @@ class MulticastActor(private val group:InetAddress) extends Actor {
         case e: SocketTimeoutException => // Ignore timeouts
         case e: ClassNotFoundException => {
           println("Could not unmarshal value, cause: %s" format(e.getMessage))
-          println(Class.forName(e.getMessage))
-          println(new String(packet.getData.slice(packet.getOffset, packet.getOffset + packet.getLength)))
-          e.printStackTrace
         }
       }
       reactWithin(25) {
@@ -60,8 +46,6 @@ class MulticastActor(private val group:InetAddress) extends Actor {
         case Subscribe(actor) => listeners = actor :: listeners;
         case msg:MessageBase => {
           val messageBytes = Marshal.dump(msg)
-          // Verify that the message can be read
-          // Marshal.load(messageBytes)
           socket.send(new DatagramPacket(messageBytes, messageBytes.length, group, socket.getLocalPort))
         }
       }
