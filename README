@@ -1,0 +1,10 @@
+This is a project to eventually produce a chat client for LAN networks.
+The idea originated during an Open Spaces Conference, JavaPosseRoundup 2011.
+Cooperating in ad-hoc networks there, it was apparent that we where missing 
+some easy means to share files over the lan to people we hadn't met before.
+
+KNOWN ISSUES:
+The test case fails on deserialization when using sbt, but not
+when using scalatest or running the tests from Intellij
+
+TODO: Write more stuff here
