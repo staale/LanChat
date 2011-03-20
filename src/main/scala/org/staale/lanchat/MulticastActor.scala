@@ -44,7 +44,7 @@ class MulticastActor(private val group:InetAddress, private val port:Int) extend
         case TIMEOUT =>
         case StopTransmission => exit
         case Subscribe(actor) => listeners = actor :: listeners;
-        case msg:MessageBase => {
+        case msg => {
           val messageBytes = Marshal.dump(msg)
           socket.send(new DatagramPacket(messageBytes, messageBytes.length, group, socket.getLocalPort))
         }
